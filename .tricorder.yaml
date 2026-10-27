@@ -1,0 +1,7 @@
+# tricorderの設定。詳細はtricorderのdocs/configuring-tricorder.mdを参照。
+session:
+  # .ghci(および~/.ghci)は対話用のimportを含み、cabal replで読み込むと失敗するため無視する。
+  build:
+    extra_auto_arguments: ["--repl-options=-ignore-dot-ghci"]
+  test:
+    extra_auto_arguments: ["--repl-options=-ignore-dot-ghci"]

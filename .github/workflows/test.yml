@@ -1,0 +1,42 @@
+name: test
+
+# push(main)ではHaskellのビルド/テストに関係するファイルが変わった時だけ走らせる。
+# pull_requestではpathsで絞らず必ず走らせる。これはOpenSSF Scorecardの
+# CI-Testsが「マージ済みPRにCIテストの実行があるか」を見るため。
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "app/**"
+      - "test/**"
+      - "*.cabal"
+      - "flake.nix"
+      - "flake.lock"
+      - "treefmt.nix"
+      - ".github/workflows/test.yml"
+  pull_request:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@08dcb3a5e62fa31e2da3d490afc4176ef55ecd72 # v30
+        with:
+          # flake.nixのnixConfigはCIでは確認なしに適用されないため、tricorder用のキャッシュをここで指定する。
+          # (nix flake checkはdevShellも評価し、tricorderの評価にhaskell.nixのビルドが要る)
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            extra-substituters = https://cache.iog.io https://tweag-tricorder.cachix.org
+            extra-trusted-public-keys = hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= tweag-tricorder.cachix.org-1:PbwYPJ9gF8Wns14ai0sHK3iblqFd5YUrj0zEzGsJ/wg=
+      - name: Build, test, format, lint and cabal check (nix flake check)
+        run: nix flake check

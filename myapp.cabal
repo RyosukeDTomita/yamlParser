@@ -1,0 +1,38 @@
+cabal-version:      3.0
+name:               myapp
+version:            0.1.0.0
+synopsis:           Haskell project template
+license:            MIT
+author:             RyosukeDTomita
+build-type:         Simple
+
+common warnings
+    ghc-options: -Wall
+
+library
+    import:           warnings
+    exposed-modules:  MyApp
+    hs-source-dirs:   src
+    build-depends:    base >=4.21 && <5
+                    , text
+    default-language: GHC2021
+
+executable myapp
+    import:           warnings
+    main-is:          Main.hs
+    hs-source-dirs:   app
+    build-depends:    base >=4.21 && <5
+                    , myapp
+                    , text
+    default-language: GHC2021
+
+test-suite myapp-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    main-is:          Spec.hs
+    hs-source-dirs:   test
+    build-depends:    base >=4.21 && <5
+                    , myapp
+                    , hspec
+                    , text
+    default-language: GHC2021

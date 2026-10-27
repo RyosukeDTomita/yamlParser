@@ -1,0 +1,17 @@
+{
+  "languages": {
+    "Haskell": {
+      "tab_size": 2,
+      "hard_tabs": false
+    }
+  },
+  "lsp": {
+    "hls": {
+      "initialization_options": {
+        "haskell": {
+          "checkProject": false
+        }
+      }
+    }
+  }
+}

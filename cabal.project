@@ -1,0 +1,5 @@
+packages: .
+
+-- Hackage を一切参照しない。依存は nix develop(hpkgs.shellFor)が用意した
+-- nixpkgs のパッケージだけで解決し、~/.cabal/store に別の実体を作らない。
+active-repositories: :none
