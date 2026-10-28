@@ -1,0 +1,13 @@
+# yaml-parserの動作確認用サンプル(Spring Bootのapplication.yaml想定)
+# 異常系: profile別設定で、検出されるべき誤りを含む
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    pasword: secret # 存在しないキー(passwordのtypo)
+  jpa:
+    hibernate: validate # 子キー(ddl-auto)を書くべき位置に値を直接書いている
+server.prot: 8080 # ドット記法で存在しないキー(portのtypo)
+logging:
+  level: INFO # 子キー(パッケージ名)を書くべき位置に値を直接書いている

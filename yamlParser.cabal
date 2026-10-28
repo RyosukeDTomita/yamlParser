@@ -1,5 +1,5 @@
 cabal-version:      3.0
-name:               myapp
+name:               yamlParser
 version:            0.1.0.0
 synopsis:           Haskell project template
 license:            MIT
@@ -11,28 +11,36 @@ common warnings
 
 library
     import:           warnings
-    exposed-modules:  MyApp
+    exposed-modules:  Parser
+                    , Rules
+                    , Schema
     hs-source-dirs:   src
     build-depends:    base >=4.21 && <5
+                    , aeson
+                    , containers
                     , text
+                    , yaml
     default-language: GHC2021
 
-executable myapp
+executable yaml-parser
     import:           warnings
     main-is:          Main.hs
     hs-source-dirs:   app
     build-depends:    base >=4.21 && <5
-                    , myapp
+                    , yamlParser
+                    , aeson
                     , text
+                    , yaml
     default-language: GHC2021
 
-test-suite myapp-test
+test-suite spec-test
     import:           warnings
     type:             exitcode-stdio-1.0
     main-is:          Spec.hs
     hs-source-dirs:   test
     build-depends:    base >=4.21 && <5
-                    , myapp
+                    , yamlParser
+                    , aeson
                     , hspec
                     , text
     default-language: GHC2021

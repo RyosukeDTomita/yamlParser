@@ -1,10 +1,11 @@
-# template-repository-haskell <!--fix-me-->
+# yamlParser
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## ABOUT
 
-Nix flakeベースのHaskellプロジェクトテンプレート。
+Springのapplication.yaml用のparser
+yamlの葉に対するチェックは行わずに、事前定義されたrulesにないキー名を検知する。
 
 ---
 
@@ -18,29 +19,26 @@ nix develop
 direnv allow
 ```
 
-> [!NOTE]
-> devShellに含まれるtricorderはhaskell.nixでビルドされるため、キャッシュ(`cache.iog.io` / `tweag-tricorder.cachix.org`)が使えないとGHCからのソースビルドになる。
-> 初回の`nix develop`で`flake.nix`の`nixConfig`を受け入れるか、`nix.conf`に`extra-substituters` / `extra-trusted-public-keys`を追加しておく。
-
 ### run locally
 
 ```shell
-runghc -isrc -iapp app/Main.hs Haskell
+runghc -isrc -iapp app/Main.hs
 ```
 
 ```shell
-cabal run myapp
+cabal run yaml-parser
 ```
 
-```shell
-# 引数を渡したい場合
-cabal run myapp -- <ARG>
-```
+---
+
+## For Developer
 
 ### test
 
 ```shell
 runghc -isrc test/Spec.hs
+# コメントに書いた`>>>`の例(doctest)を実行する
+cabal repl --with-compiler=doctest yamlParser
 # nix上でビルドしてtest-suiteを実行する(CIと同じ)
 nix flake check
 ```
@@ -58,7 +56,7 @@ nix build .#static
 
 - treefmt
   - ormolu
-  - hlint(lintのみ。指摘があると失敗する)
+  - hlint(lintのみ。指摘があると失敗する。ポイントフリーを避けるため`.hlint.yaml`で`Eta reduce`を無効化)
   - nixfmt
   - mdformat
   - ghalint
@@ -84,28 +82,3 @@ tricorder start
 tricorder status
 tricorder test suites
 ```
-
-> [!NOTE]
-> `.ghci`(ユーザーの`~/.ghci`があればそれも)は対話用のimportを含み、`cabal repl`で読み込むと失敗することがあるため、`.tricorder.yaml`で`-ignore-dot-ghci`を指定している。
-
-### hoogle
-
-devShellには依存ライブラリのドキュメント込みのHoogleが入っている。
-
-```shell
-hoogle server --local
-```
-
-### ライブラリの追加
-
-- `myapp.cabal`の`build-depends`に足す。
-  - `direnv`不使用の場合には再度`nix develop`する
-  - `flake.nix`のdevShellは`hpkgs.shellFor`で`.cabal`から依存を読む
-- パッケージはnixpkgs経由で取得し、Hackageからは取得しない。
-  - `cabal.project`にもHackageを参照させないように設定済み
-- .ghciでデフォルトでimportするライブラリは`/sync-ghci`SKILLSで行う。
-
-### GHCのバージョンを上げる
-
-`flake.nix`の`ghcVersion`を変更する(`hpkgs` / `packages.static` / `treefmt.nix`のormolu・hlintはここを参照する)。
-`myapp.cabal`の`base`の下限も合わせて変更する。

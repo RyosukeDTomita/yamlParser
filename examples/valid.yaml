@@ -1,0 +1,37 @@
+# yaml-parserの動作確認用サンプル(Spring Bootのapplication.yaml想定)
+# 正常系: エラーが1件も出ないこと
+spring:
+  application:
+    name: order-service
+  profiles:
+    active: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orders
+    username: app
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+server:
+  port: 8080
+  shutdown: graceful
+  servlet:
+    context-path: /api
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: always
+logging:
+  level:
+    root: INFO
+    com.example.order: DEBUG
+    org.hibernate.SQL: DEBUG

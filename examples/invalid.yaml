@@ -1,0 +1,15 @@
+# yaml-parserの動作確認用サンプル(Spring Bootのapplication.yaml想定)
+# 異常系: profile別設定で、検出されるべき誤りを含む
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    pasword: secret # typo: unknown key
+  jpa:
+    hibernate:
+      ddl-auto: drop-all # 不正なenum値
+server.port: eighty # 数値でない
+logging:
+  level:
+    root: VERBOSE # 不正なログレベル

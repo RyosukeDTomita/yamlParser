@@ -59,22 +59,22 @@
         projectSrc = pkgs.lib.fileset.toSource {
           root = ./.;
           fileset = pkgs.lib.fileset.unions [
-            ./myapp.cabal
+            ./yamlParser.cabal
             ./src
             ./app
             ./test
           ];
         };
-        # 依存はmyapp.cabalのbuild-dependsだけで管理する。
+        # 依存はyamlParser.cabalのbuild-dependsだけで管理する。
         # callCabal2nixがbuild-dependsをhpkgsの同名パッケージに解決する。
-        myapp = hpkgs.callCabal2nix "myapp" projectSrc { };
+        yamlParser = hpkgs.callCabal2nix "yamlParser" projectSrc { };
       in
       {
         formatter = treefmtEval.config.build.wrapper;
 
         # `nix flake check`はファイルを更新せず、チェックだけを行う。(主にCI)
         # checks.*で書かれたものが走る。
-        checks.build = myapp;
+        checks.build = yamlParser;
         checks.formatting = treefmtCheckEval.config.build.check self;
         checks.cabal-check =
           pkgs.runCommand "cabal-check"
@@ -90,15 +90,15 @@
 
         # `nix build`で実行バイナリを生成する(nix storeに動的リンクする開発用)。
         # callCabal2nixはビルド時にtest-suiteも実行する。
-        packages.default = myapp;
+        packages.default = yamlParser;
         # musl静的バイナリ
         packages.static = pkgs.haskell.lib.justStaticExecutables (
-          pkgs.pkgsStatic.haskell.packages.${ghcVersion}.callCabal2nix "myapp" projectSrc { }
+          pkgs.pkgsStatic.haskell.packages.${ghcVersion}.callCabal2nix "yamlParser" projectSrc { }
         );
 
         # cabalはHackageではなく、nixからパッケージを取得する
         devShells.default = hpkgs.shellFor {
-          packages = _: [ myapp ];
+          packages = _: [ yamlParser ];
           # 依存ライブラリのドキュメント込みのローカルHoogleを使えるようにする(`hoogle server --local`)。
           withHoogle = true;
           nativeBuildInputs = [
@@ -107,6 +107,8 @@
             hpkgs.haskell-language-server
             pkgs.cabal-install
             hpkgs.hlint
+            # コメントの`>>>`例を実行する(`cabal repl --with-compiler=doctest yamlParser`)
+            hpkgs.doctest
             tricorder.packages.${system}.tricorder
             unstablePkgs.pinact
             unstablePkgs.ghalint
